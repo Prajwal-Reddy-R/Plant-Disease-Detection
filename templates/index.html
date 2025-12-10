@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #28a745;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #2ecc71;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #27ae60;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d5f5e3;
+            border: 1px solid #2ecc71;
+            color: #27ae60;
+        }
+        .error {
+            background-color: #fadbd8;
+            border: 1px solid #e74c3c;
+            color: #c0392b;
+        }
+        .confidence {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Plant Disease Prediction</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="image_path">Enter Image Path:</label>
+                <input type="text" id="image_path" name="image_path" required 
+                       placeholder="Enter the full path to your image file">
+            </div>
+            <button type="submit">Predict Disease</button>
+        </form>
+
+        {% if error %}
+        <div class="result error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        {% if prediction %}
+        <div class="result success">
+            <strong>Predicted Disease/Class:</strong> {{ prediction }}
+            <div class="confidence">Confidence: {{ "%.2f"|format(confidence) }}</div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

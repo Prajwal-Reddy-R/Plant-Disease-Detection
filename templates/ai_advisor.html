@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Treatment Advisor | CropSense</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg: #0f5132; --bg-dark: #052e1d; --card: #ffffff; --text: #2c3e50; --muted: #6b7280; --accent: #22c55e; --accent-dark: #16a34a; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; font-family:'Poppins',sans-serif; background:linear-gradient(135deg,var(--bg) 0%, var(--bg-dark) 100%); min-height:100vh; color:var(--text); }
+    .modern-navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+    }
+
+    .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .brand-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+        .nav-link {
+        text-decoration: none;
+        color: #2c3e50;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+        padding-bottom: 5px; /* Add some space for the underline */
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #667eea;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+        transform: scaleX(1);
+    }
+
+    .nav-link.active {
+        color: #667eea;
+        font-weight: 500; /* remove bold */
+    }
+    .container{ max-width:1000px; margin:100px auto 0; padding:2rem 1rem; }
+    .header{ color:#fff; margin:1rem 0 1.25rem; }
+    .card{ background:var(--card); border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.08); padding:1.25rem; }
+    textarea, input, button { font-family: inherit; }
+    textarea{ width:100%; min-height:160px; border-radius:12px; border:1px solid #e5e7eb; padding:.85rem 1rem; resize:vertical; font-size:1rem; }
+    .btn { background: var(--accent); color:#fff; border:none; border-radius:10px; padding:.75rem 1rem; font-weight:600; cursor:pointer; }
+    .btn:hover{ background: var(--accent-dark); }
+    .muted{ color: var(--muted); }
+    .small{ font-size:.9rem; }
+    .error{ color:#b91c1c; background:#fee2e2; border:1px solid #fecaca; padding:.5rem .75rem; border-radius:8px; margin-top:.75rem; }
+    .result{ white-space:pre-wrap; line-height:1.5; }
+    .actions { display:flex; align-items:center; gap:.5rem; margin-top:.75rem; flex-wrap:wrap; }
+    .copy { background:#111827; }
+    .copy:hover{ background:#0b1220; }
+  </style>
+</head>
+<body>
+    <nav class="modern-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-text" style="color: #0f5132;">CropSense</span>
+            </div>
+            <div class="nav-links" style="align-items:center; gap:1rem;">
+                <a href="/" class="nav-link">{{ t('nav.home') }}</a>
+                <a href="/disease-tracker" class="nav-link">{{ t('nav.disease_tracker') }}</a>
+                <a href="/plants" class="nav-link">{{ t('nav.tracked_plants') }}</a>
+                <a href="/analytics" class="nav-link">{{ t('nav.analytics') }}</a>
+                <a href="/weather" class="nav-link">{{ t('nav.weather') }}</a>
+                <a href="/ai-advisor" class="nav-link">{{ t('nav.ai_advisor') }}</a>
+            </div>
+        </div>
+    </nav>
+
+  <div class="container">
+    <div class="header">
+      <h1>AI Disease Treatment Advisor</h1>
+      <p class="muted">Describe the crop, symptoms, and conditions. The AI agronomist will suggest treatments and precautions.</p>
+    </div>
+
+    <div class="card">
+      <form method="POST">
+        <label for="description" class="small muted">Describe the problem (crop, variety, symptoms, leaf/fruit/stem, patterns, weather, recent sprays):</label>
+        <textarea id="description" name="description" placeholder="Example: Tomato plants with yellowing lower leaves, small brown spots with yellow halos, lesions enlarging after recent rains. Humidity high, temp ~24°C. Drip irrigation. Southern India.">{{ description or '' }}</textarea>
+        <div class="actions">
+          <button type="submit" class="btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Get Recommendations</button>
+          <button type="button" class="btn copy" id="copyBtn"><i class="fa-regular fa-copy"></i> Copy Result</button>
+        </div>
+      </form>
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+      {% if result %}
+        <div style="margin-top:1rem;">
+          <h3 style="margin:0;">Recommended Actions</h3>
+          <div class="small muted" style="margin:.25rem 0 0.75rem;">Powered by Google Gemini</div>
+          <div id="resultText" class="result">{{ result | replace('**', '') }}</div>
+          <div class="small muted" style="margin-top:.75rem;">Always confirm with local extension services and follow pesticide labels and regulations.</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    const copyBtn = document.getElementById('copyBtn');
+    if(copyBtn){
+      copyBtn.addEventListener('click', () => {
+        const el = document.getElementById('resultText');
+        if(!el){ alert('No result to copy yet.'); return; }
+        const txt = el.innerText || el.textContent || '';
+        navigator.clipboard.writeText(txt).then(() => {
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Result', 1200);
+        });
+      });
+    }
+  </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const links = document.querySelectorAll('.nav-link');
+            const currentPath = window.location.pathname;
+
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

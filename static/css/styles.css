@@ -1,0 +1,105 @@
+.nav-link {
+    text-decoration: none;
+    padding: 8px 16px;
+    margin: 0 5px;
+    color: #333;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.nav-link.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.severity-high {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.severity-medium {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.severity-low {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.dashboard-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.detection-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detection-table th,
+.detection-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.detection-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.detection-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.detection-table tr:hover {
+    background-color: #f0f0f0;
+}
+
+.download-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.download-btn:hover {
+    background-color: #45a049;
+}
+
+.error-message {
+    color: #dc3545;
+    padding: 10px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin: 10px 0;
+}

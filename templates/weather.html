@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather & Disease Risk | CropSense</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f5132;
+      --bg-dark: #052e1d;
+      --card: #ffffff;
+      --text: #2c3e50;
+      --muted: #6b7280;
+      --accent: #22c55e;
+      --accent-dark: #16a34a;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--bg-dark) 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .modern-navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+    }
+    .brand-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+        .nav-link {
+        text-decoration: none;
+        color: #2c3e50;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+        padding-bottom: 5px; /* Add some space for the underline */
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #667eea;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+        transform: scaleX(1);
+    }
+
+    .nav-link.active {
+        color: #667eea;
+        font-weight: 500; /* remove bold */
+    }
+    .container {
+      max-width: 1100px; margin: 100px auto 0; padding: 2rem 1rem;
+    }
+    .header { color: #fff; margin: 1rem 0 1.5rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media(min-width: 900px) { .grid { grid-template-columns: 1.1fr 0.9fr; } }
+
+    .card {
+      background: var(--card); border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      padding: 1.25rem;
+    }
+    .card h3 { margin-top: 0; }
+    .input-row { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .input-row input {
+      flex: 1; min-width: 220px; padding: .75rem 1rem; border-radius: 10px;
+      border: 1px solid #e5e7eb; font-family: inherit; font-size: 1rem;
+    }
+    .btn {
+      background: var(--accent); color: white; border: none; border-radius: 10px;
+      padding: .75rem 1rem; font-weight: 600; cursor: pointer;
+    }
+    .btn:hover { background: var(--accent-dark); }
+    .btn.secondary { background: var(--info); }
+    .btn.secondary:hover { background: #2563eb; }
+
+    .pill { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 600; }
+    .pill.low { background: #dcfce7; color: #065f46; }
+    .pill.moderate { background: #fef3c7; color: #92400e; }
+    .pill.high { background: #fee2e2; color: #991b1b; }
+
+    .muted { color: var(--muted); }
+    .list { margin: .25rem 0 0 .75rem; padding-left: 1rem; }
+    .list li { margin: .25rem 0; }
+
+    .forecast-grid { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: .75rem; }
+    @media(min-width:680px){ .forecast-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media(min-width:980px){ .forecast-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .small { font-size: .9rem; }
+    .error { color: #b91c1c; background: #fee2e2; border: 1px solid #fecaca; padding: .5rem .75rem; border-radius: 8px; }
+    .loading { color: #1f2937; }
+    code { background: #f3f4f6; padding: .15rem .35rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+    <nav class="modern-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-text" style="color: #0f5132;">CropSense</span>
+            </div>
+            <div class="nav-links" style="align-items:center; gap:1rem;">
+                <a href="/" class="nav-link">{{ t('nav.home') }}</a>
+                <a href="/disease-tracker" class="nav-link">{{ t('nav.disease_tracker') }}</a>
+                <a href="/plants" class="nav-link">{{ t('nav.tracked_plants') }}</a>
+                <a href="/analytics" class="nav-link">{{ t('nav.analytics') }}</a>
+                <a href="/weather" class="nav-link">{{ t('nav.weather') }}</a>
+                <a href="/ai-advisor" class="nav-link">{{ t('nav.ai_advisor') }}</a>
+            </div>
+        </div>
+    </nav>
+
+  <div class="container">
+    <div class="header">
+      <h1>Weather-based Disease Risk & Precautions</h1>
+      <p class="muted">Use local weather to understand how plant diseases may spread and what to do next.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Check your location</h3>
+        <p class="small muted">Enter a city name, ZIP/postcode, or coordinates (e.g., 12.97,77.59)</p>
+        <div class="input-row" style="margin: .5rem 0 1rem;">
+          <input id="locationInput" placeholder="e.g., Bengaluru or 12.97,77.59" />
+          <button class="btn" id="checkBtn"><i class="fa-solid fa-magnifying-glass"></i> Check</button>
+          <button class="btn secondary" id="geoBtn"><i class="fa-solid fa-location-crosshairs"></i> Use my location</button>
+        </div>
+        <div id="status" class="small muted"></div>
+
+        <div id="result" style="margin-top: 1rem; display:none;">
+          <div id="locationMeta" class="small muted"></div>
+
+          <div style="margin-top: .75rem; display:flex; align-items:center; gap:.5rem;">
+            <span class="muted small">Overall disease risk (current):</span>
+            <span id="currentRiskPill" class="pill low">Low</span>
+          </div>
+
+          <div id="currentBlock" class="card" style="margin-top: .75rem;">
+            <h3 style="margin-top:0;">Current Conditions</h3>
+            <div id="currentSummary" class="small muted"></div>
+            <div id="currentFactors" style="margin-top:.5rem;"></div>
+            <div style="margin-top:.5rem;">
+              <div class="muted small">Precautions to take now:</div>
+              <ul id="currentPrecautions" class="list"></ul>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: .75rem;">
+            <h3 style="margin-top:0;">3-Day Forecast & Risk</h3>
+            <div class="forecast-grid" id="forecastGrid"></div>
+          </div>
+        </div>
+
+        <div id="errorBox" class="error" style="display:none; margin-top: .75rem;"></div>
+        <div id="loading" class="loading small" style="display:none; margin-top: .5rem;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching weather…</div>
+      </div>
+
+      <div class="card">
+        <h3>How weather drives disease spread</h3>
+        <ul class="list">
+          <li><b>Humidity ≥ 85% and 18–30°C</b> accelerates fungal diseases (mildew, blight, rust).</li>
+          <li><b>Rain and leaf wetness</b> increase splash-borne bacterial and foliar pathogen spread.</li>
+          <li><b>Wind ≥ 20 kph</b> aids airborne spore movement and increases vector activity.</li>
+          <li><b>Hot & dry</b> can lower fungal pressure but raise mite/virus-vector risks.</li>
+        </ul>
+        <p class="small muted" style="margin-top:.75rem;">Always follow local regulations and product labels when applying plant protection products.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const errorBox = document.getElementById('errorBox');
+    const loadingEl = document.getElementById('loading');
+    const resultEl = document.getElementById('result');
+    const locationMeta = document.getElementById('locationMeta');
+    const currentSummary = document.getElementById('currentSummary');
+    const currentFactors = document.getElementById('currentFactors');
+    const currentPrecautions = document.getElementById('currentPrecautions');
+    const currentRiskPill = document.getElementById('currentRiskPill');
+    const forecastGrid = document.getElementById('forecastGrid');
+
+    function setRiskPill(el, level){
+      el.textContent = level;
+      el.classList.remove('low','moderate','high');
+      if(level === 'High') el.classList.add('high');
+      else if(level === 'Moderate') el.classList.add('moderate');
+      else el.classList.add('low');
+    }
+
+    async function fetchWeather(q){
+      errorBox.style.display = 'none';
+      loadingEl.style.display = 'inline-block';
+      statusEl.textContent = '';
+      try{
+        const resp = await fetch(`/api/weather?q=${encodeURIComponent(q)}&days=3`);
+        const data = await resp.json();
+        if(!data.success){
+          throw new Error(data.error || 'Failed to fetch weather');
+        }
+        renderResult(data);
+      }catch(err){
+        errorBox.textContent = err.message;
+        errorBox.style.display = 'block';
+        resultEl.style.display = 'none';
+      }finally{
+        loadingEl.style.display = 'none';
+      }
+    }
+
+    function renderResult(payload){
+      const loc = payload.location || {};
+      const data = payload.data || {};
+      const current = (data.current||{});
+      const assessments = payload.assessments || [];
+
+      locationMeta.textContent = `${loc.name||''}, ${loc.region||''} ${loc.country||''}`.trim();
+      currentSummary.textContent = `Temp ${current.temp_c ?? '-'}°C, Humidity ${current.humidity ?? '-'}%, Wind ${current.wind_kph ?? '-'} kph, Precip ${current.precip_mm ?? 0} mm`;
+
+      // Current risk block
+      const currentAssess = assessments.find(a => a.type === 'current');
+      currentFactors.innerHTML = '';
+      currentPrecautions.innerHTML = '';
+      if(currentAssess){
+        setRiskPill(currentRiskPill, currentAssess.risk.level);
+        const factors = currentAssess.risk.factors || [];
+        if(factors.length){
+          const ul = document.createElement('ul'); ul.className = 'list';
+          factors.forEach(f => { const li = document.createElement('li'); li.textContent = f; ul.appendChild(li); });
+          currentFactors.appendChild(ul);
+        } else {
+          currentFactors.innerHTML = '<span class="muted small">No major risk factors detected right now.</span>';
+        }
+        (currentAssess.risk.precautions || []).forEach(p => {
+          const li = document.createElement('li'); li.textContent = p; currentPrecautions.appendChild(li);
+        });
+      }
+
+      // Forecast cards
+      forecastGrid.innerHTML = '';
+      (data.forecast?.forecastday || []).forEach((d, idx) => {
+        const assess = assessments.find(a => a.type==='day' && a.date===d.date);
+        const card = document.createElement('div');
+        card.className = 'card';
+        const day = d.day || {};
+        const top = document.createElement('div');
+        const title = document.createElement('h4'); title.textContent = new Date(d.date).toDateString();
+        const pill = document.createElement('span'); pill.className = 'pill low'; pill.style.marginLeft = '.5rem';
+        setRiskPill(pill, (assess?.risk?.level)||'Low');
+        top.appendChild(title); top.appendChild(pill);
+        const summary = document.createElement('div'); summary.className = 'small muted';
+        summary.textContent = `Avg ${day.avgtemp_c ?? '-'}°C, Humidity ${day.avghumidity ?? '-'}%, Max Wind ${day.maxwind_kph ?? '-'} kph, Rain ${day.totalprecip_mm ?? 0} mm`;
+        const factors = document.createElement('div');
+        if(assess?.risk?.factors?.length){
+          const ul = document.createElement('ul'); ul.className = 'list';
+          assess.risk.factors.forEach(f => { const li = document.createElement('li'); li.textContent = f; ul.appendChild(li); });
+          factors.appendChild(ul);
+        } else {
+          factors.innerHTML = '<span class="muted small">No major risk factors forecast.</span>';
+        }
+        const prec = document.createElement('div');
+        prec.innerHTML = '<div class="muted small">Suggested precautions:</div>';
+        const ulp = document.createElement('ul'); ulp.className = 'list';
+        (assess?.risk?.precautions||[]).forEach(p => { const li = document.createElement('li'); li.textContent = p; ulp.appendChild(li); });
+        prec.appendChild(ulp);
+
+        card.appendChild(top);
+        card.appendChild(summary);
+        card.appendChild(factors);
+        card.appendChild(prec);
+        forecastGrid.appendChild(card);
+      });
+
+      resultEl.style.display = 'block';
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', () => {
+      const q = document.getElementById('locationInput').value.trim();
+      if(!q){ statusEl.textContent = 'Please enter a location.'; return; }
+      fetchWeather(q);
+    });
+
+    document.getElementById('geoBtn').addEventListener('click', () => {
+      if(!navigator.geolocation){ statusEl.textContent = 'Geolocation not supported.'; return; }
+      statusEl.textContent = 'Fetching your location…';
+      navigator.geolocation.getCurrentPosition(pos => {
+        const q = `${pos.coords.latitude.toFixed(4)},${pos.coords.longitude.toFixed(4)}`;
+        document.getElementById('locationInput').value = q;
+        fetchWeather(q);
+      }, err => {
+        statusEl.textContent = 'Could not get location.';
+      }, { enableHighAccuracy: true, timeout: 8000 });
+    });
+
+    // If URL has ?q=, auto load
+    const params = new URLSearchParams(location.search);
+    if(params.get('q')){
+      document.getElementById('locationInput').value = params.get('q');
+      fetchWeather(params.get('q'));
+    }
+  </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const links = document.querySelectorAll('.nav-link');
+            const currentPath = window.location.pathname;
+
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

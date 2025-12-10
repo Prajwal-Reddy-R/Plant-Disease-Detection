@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supported Plant Diseases - CropSense AI</title>
+    <link rel="stylesheet" href="../static/css/style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #28a745;
+            min-height: 100vh;
+        }
+        .modern-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding-bottom: 5px; /* Add some space for the underline */
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #667eea;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            transform: scaleX(1);
+        }
+
+        .nav-link.active {
+            color: #667eea;
+            font-weight: 500; /* remove bold */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 0;
+            padding: 2rem;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .disease-list {
+            list-style: none;
+            padding: 0;
+            column-count: 3;
+            column-gap: 2rem;
+        }
+        .disease-item {
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <nav class="modern-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-text" style="color: #0f5132;">CropSense</span>
+            </div>
+            <div class="nav-links" style="align-items:center; gap:1rem;">
+                <a href="/" class="nav-link">{{ t('nav.home') }}</a>
+                <a href="/disease-tracker" class="nav-link">{{ t('nav.disease_tracker') }}</a>
+                <a href="/plants" class="nav-link">{{ t('nav.tracked_plants') }}</a>
+                <a href="/analytics" class="nav-link">{{ t('nav.analytics') }}</a>
+                <a href="/weather" class="nav-link">{{ t('nav.weather') }}</a>
+                <a href="/ai-advisor" class="nav-link">{{ t('nav.ai_advisor') }}</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2 class="card-title">Supported Plant Diseases</h2>
+            <ul class="disease-list">
+                <li class="disease-item">Apple___Apple_scab</li>
+                <li class="disease-item">Apple___Black_rot</li>
+                <li class="disease-item">Apple___Cedar_apple_rust</li>
+                <li class="disease-item">Apple___healthy</li>
+                <li class="disease-item">Blueberry___healthy</li>
+                <li class="disease-item">Cherry_(including_sour)___healthy</li>
+                <li class="disease-item">Cherry_(including_sour)___Powdery_mildew</li>
+                <li class="disease-item">Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot</li>
+                <li class="disease-item">Corn_(maize)___Common_rust_</li>
+                <li class="disease-item">Corn_(maize)___healthy</li>
+                <li class="disease-item">Corn_(maize)___Northern_Leaf_Blight</li>
+                <li class="disease-item">Grape___Black_rot</li>
+                <li class="disease-item">Grape___Esca_(Black_Measles)</li>
+                <li class="disease-item">Grape___healthy</li>
+                <li class="disease-item">Grape___Leaf_blight_(Isariopsis_Leaf_Spot)</li>
+                <li class="disease-item">Orange___Haunglongbing_(Citrus_greening)</li>
+                <li class="disease-item">Peach___Bacterial_spot</li>
+                <li class="disease-item">Peach___healthy</li>
+                <li class="disease-item">Pepper,_bell___Bacterial_spot</li>
+                <li class="disease-item">Pepper,_bell___healthy</li>
+                <li class="disease-item">Potato___Early_blight</li>
+                <li class="disease-item">Potato___healthy</li>
+                <li class="disease-item">Potato___Late_blight</li>
+                <li class="disease-item">Raspberry___healthy</li>
+                <li class="disease-item">Soybean___healthy</li>
+                <li class="disease-item">Squash___Powdery_mildew</li>
+                <li class="disease-item">Strawberry___healthy</li>
+                <li class="disease-item">Strawberry___Leaf_scorch</li>
+                <li class="disease-item">Tomato___Bacterial_spot</li>
+                <li class="disease-item">Tomato___Early_blight</li>
+                <li class="disease-item">Tomato___healthy</li>
+                <li class="disease-item">Tomato___Late_blight</li>
+                <li class="disease-item">Tomato___Leaf_Mold</li>
+                <li class="disease-item">Tomato___Septoria_leaf_spot</li>
+                <li class="disease-item">Tomato___Spider_mites Two-spotted_spider_mite</li>
+                <li class="disease-item">Tomato___Target_Spot</li>
+                <li class="disease-item">Tomato___Tomato_mosaic_virus</li>
+                <li class="disease-item">Tomato___Tomato_Yellow_Leaf_Curl_Virus</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analysis Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Analysis Result</h1>
+        <div class="result">
+            <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Uploaded Image">
+            <h2>Prediction: {{ prediction }}</h2>
+            <a href="{{ url_for('download_report', report_name=report_path) }}" class="download-btn">Download Report</a>
+        </div>
+        <div class="navigation">
+            <a href="{{ url_for('index') }}">Analyze Another Image</a>
+            <a href="{{ url_for('disease_tracker') }}">View Disease Tracker</a>
+        </div>
+    </div>
+</body>
+</html>

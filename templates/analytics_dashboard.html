@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t('nav.analytics') }} - {{ t('brand') }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Include base styles from home.html */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #0f5132 0%, #052e1d 100%);
+            min-height: 100vh;
+        }
+
+        .modern-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .analytics-container {
+            max-width: 1200px;
+            margin: 100px auto 0;
+            padding: 2rem;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .analytics-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .analytics-card:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(0,0,0,0.2);}
+
+        .stats-header {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(0,0,0,0.2);}
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding-bottom: 5px; /* Add some space for the underline */
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #667eea;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            transform: scaleX(1);
+        }
+
+        .nav-link.active {
+            color: #667eea;
+            font-weight: 500; /* remove bold */
+        }
+    </style>
+</head>
+<body>
+    <nav class="modern-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-text" style="color: #0f5132; font-weight: bold; font-size: 1.5rem;">CropSense</span>
+            </div>
+            <div class="nav-links" style="align-items:center; gap:1rem;">
+                <a href="/" class="nav-link">{{ t('nav.home') }}</a>
+                <a href="/disease-tracker" class="nav-link">{{ t('nav.disease_tracker') }}</a>
+                <a href="/plants" class="nav-link">{{ t('nav.tracked_plants') }}</a>
+                <a href="/analytics" class="nav-link">{{ t('nav.analytics') }}</a>
+                <a href="/weather" class="nav-link">{{ t('nav.weather') }}</a>
+                <a href="/ai-advisor" class="nav-link">{{ t('nav.ai_advisor') }}</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="analytics-container">
+        <div class="analytics-grid">
+            <div class="analytics-card">
+                <h2 class="stats-header">Disease Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="diseaseChart"></canvas>
+                </div>
+            </div>
+            <div class="analytics-card">
+                <h2 class="stats-header">Plant Types</h2>
+                <div class="chart-container">
+                    <canvas id="plantChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="analytics-card" style="margin-top: 2rem;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.total_scans }}</div>
+                    <div class="stat-label">Total Scans</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.unique_diseases }}</div>
+                    <div class="stat-label">Unique Diseases</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.unique_plants }}</div>
+                    <div class="stat-label">Plant Types</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Disease Distribution Chart
+        const diseaseCtx = document.getElementById('diseaseChart').getContext('2d');
+        new Chart(diseaseCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ stats.diseases.labels|tojson }},
+                datasets: [{
+                    label: 'Number of Detections',
+                    data: {{ stats.diseases.data|tojson }},
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Plant Types Chart
+        const plantCtx = document.getElementById('plantChart').getContext('2d');
+        new Chart(plantCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ stats.plants.labels|tojson }},
+                datasets: [{
+                    data: {{ stats.plants.data|tojson }},
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+</body>
+</html>

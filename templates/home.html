@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CropSense - Disease Recognition System</title>
+    <link rel="stylesheet" href="../static/css/style.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Poppins', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #0f5132 0%, #052e1d 100%);
+        min-height: 100vh;
+      }
+
+      .modern-navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        transition: background-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+      }
+
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .brand-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+      }
+
+      .hero-section {
+        padding-top: 100px;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        /* Inherit the global background to keep greens consistent */
+        background: transparent;
+        color: white;
+      }
+
+      .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .hero-title-section {
+        flex: 1;
+        min-width: 300px;
+        text-align: left;
+      }
+
+      .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+
+      .title-highlight {
+        color: #ffeb3b;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+      }
+
+      .hero-stats {
+        display: flex;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .stat-item i {
+        font-size: 2rem;
+        color: #ffeb3b;
+      }
+
+      .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        display: block;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .treatment-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .treatment-title {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .treatment-category {
+        margin-bottom: 1.5rem;
+      }
+
+      .category-title {
+        color: #4a5568;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .treatment-list {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .treatment-item {
+        padding: 0.5rem 0;
+        color: #4a5568;
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .treatment-item i {
+        color: #667eea;
+        margin-right: 0.5rem;
+        margin-top: 0.25rem;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+      }
+
+      .nav-link {
+        text-decoration: none;
+        color: #2c3e50;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-link:hover {
+        color: #667eea;
+      }
+
+      .card-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .input-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .input-label {
+        display: block;
+        color: #2c3e50;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+
+      .path-input {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .path-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .result {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .success {
+        background-color: #d1fae5;
+        border: 1px solid #10b981;
+        color: #065f46;
+      }
+
+      .error {
+        background-color: #fee2e2;
+        border: 1px solid #ef4444;
+        color: #991b1b;
+      }
+
+      .prediction-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .confidence-text {
+        font-size: 1rem;
+        opacity: 0.8;
+      }
+
+      /* New styles for Features and Supported Diseases */
+      .section-padding {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+      }
+
+      .feature-card {
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+      }
+
+      .feature-card i {
+        font-size: 3rem;
+        color: #28a745;
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.4rem;
+        color: #2c3e50;
+        margin-bottom: 0.75rem;
+      }
+
+      .feature-card p {
+        font-size: 1rem;
+        color: #4a5568;
+        line-height: 1.7;
+      }
+
+      .diseases-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .disease-item {
+        background: #e9f7ef;
+        border-left: 5px solid #28a745;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #2c3e50;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .disease-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .disease-item i {
+        color: #28a745;
+      }
+
+      .footer {
+        background: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 2rem 0;
+        margin-top: 4rem;
+      }
+
+      .footer p {
+        margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      /* Smooth transitions and modern animations */
+      .card, .feature-card, .disease-item, .submit-btn, .form-input, .nav-link { transition: all 0.35s ease; }
+      .card { transform: translateY(0); }
+      .card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.18); }
+      .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,0.18); }
+      .form-input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 4px rgba(139,92,246,0.15); }
+      .feature-card:hover, .disease-item:hover { transform: translateY(-3px) scale(1.01); }
+      @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px);} to { opacity: 1; transform: translateY(0);} }
+      .hero-title-section, .prediction-form, .features-grid, .diseases-grid { animation: fadeInUp 0.6s ease both; }
+
+      /* Darker, more legible results section */
+      .result-section { background: rgba(17,24,39,0.78); color: #fff; border-radius: 16px; padding: 1rem 1.25rem; box-shadow: 0 10px 28px rgba(0,0,0,0.35); backdrop-filter: blur(6px); }
+      .result-section .result-title { color: #e5e7eb; }
+      .prediction-text { font-weight: 600; letter-spacing: 0.2px; }
+      .confidence-info { margin-top: 0.5rem; }
+      .confidence-bar { width: 100%; height: 10px; background: rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; }
+      .confidence-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 999px; transition: width 0.6s ease; }
+      .confidence-text, .confidence-percentage { color: #f3f4f6; }
+
+      /* Slightly darker nav for contrast on dark hero */
+      .modern-navbar { background: rgba(255, 255, 255, 0.92); }
+
+      /* Download button styling */
+      .download-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff !important;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .download-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+        color: #ffffff !important;
+      }
+
+      /* Scroll reveal animations */
+      .reveal { opacity: 0; transform: translateY(18px) scale(0.98); transition: opacity 0.6s ease, transform 0.6s ease; }
+      .reveal.show { opacity: 1; transform: translateY(0) scale(1); }
+      .feature-card, .disease-item, .stat-item { will-change: transform, opacity; }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="modern-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-text" style="color: #0f5132;">CropSense</span>
+            </div>
+            <div class="nav-links" style="align-items:center; gap:1rem;">
+                <a href="/" class="nav-link">{{ t('nav.home') }}</a>
+                <a href="/disease-tracker" class="nav-link">{{ t('nav.disease_tracker') }}</a>
+                <a href="/plants" class="nav-link">{{ t('nav.tracked_plants') }}</a>
+                <a href="/analytics" class="nav-link">{{ t('nav.analytics') }}</a>
+                <a href="/weather" class="nav-link">{{ t('nav.weather') }}</a>
+                <a href="/ai-advisor" class="nav-link">{{ t('nav.ai_advisor') }}</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+      <div class="hero-container">
+        <div class="top-row">
+          <!-- Left: Hero Title Section -->
+          <div class="hero-title-section">
+            <h1 class="hero-title">
+              <span class="title-highlight">AI-Powered</span>
+              Plant Disease Detection
+            </h1>
+            <p class="hero-subtitle">
+              Protect your crops with advanced machine learning technology. Upload
+              a photo and get instant disease diagnosis with treatment
+              recommendations.
+            </p>
+            <div class="hero-stats">
+              <div class="stat-item">
+                <i class="fas fa-leaf"></i>
+                <div>
+                  <span class="stat-number">38+</span>
+                  <span class="stat-label">Disease Types</span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-bullseye"></i>
+                <div>
+                  <span class="stat-number">99.4%</span>
+                  <span class="stat-label">Accuracy</span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                  <span class="stat-number">< 2s</span>
+                  <span class="stat-label">Analysis Time</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Disease Detection Form -->
+          <div class="card">
+            <h2 class="section-title">
+              <i class="fas fa-search"></i>
+              Disease Detection
+            </h2>
+            <form method="POST" class="prediction-form" enctype="multipart/form-data">
+              <div class="input-group">
+                <label class="input-label" for="image">Upload Image:</label>
+                <input type="file" id="image" name="image" class="form-input" accept="image/*" capture="environment" />
+                <small class="text-muted-custom">Or, if you prefer, enter a local/server image path below.</small>
+              </div>
+              <div id="image-preview-container" style="margin-bottom: 1.5rem; display: none;">
+                <label class="input-label">Image Preview:</label>
+                <img id="image-preview" src="#" alt="Image Preview" style="max-width: 100%; max-height: 200px; border-radius: 12px; border: 2px solid #e2e8f0; background: #fff; object-fit: cover;" />
+              </div>
+              <div class="input-group">
+                <label class="input-label" for="image_path">Enter Image Path:</label>
+                <input
+                  type="text"
+                  id="image_path"
+                  name="image_path"
+                  class="form-input"
+                  placeholder="e.g., C:\\path\\to\\leaf.jpg or static\\uploads\\leaf.jpg"
+                />
+              </div>
+
+              {% if uploaded_image_url %}
+              <div id="uploaded-image-preview-server" class="input-group" style="display:flex; align-items:center; gap:1rem;">
+                <div>
+                  <label class="input-label">Selected Image Preview:</label>
+                  <img src="{{ uploaded_image_url }}" alt="Uploaded leaf preview" style="max-width:160px; max-height:160px; border-radius:12px; border: 2px solid #e2e8f0; background:#fff; object-fit:cover;"/>
+                </div>
+              </div>
+              {% endif %}
+
+              <button type="submit" class="submit-btn">
+                <i class="fas fa-search"></i> Analyze Plant
+              </button>
+            </form>
+
+            {% if error %}
+            <div class="result-section error-result">
+              <p class="prediction-text">{{ error }}</p>
+            </div>
+            {% endif %}
+            
+            {% if prediction %}
+            <div class="result-section success-result">
+              <h3 class="result-title">Analysis Results</h3>
+              <p class="prediction-text">{{ prediction }}</p>
+              <div class="confidence-info">
+                <p class="confidence-text">Confidence Score:</p>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" data-width="{{ '%.1f'|format(confidence * 100) }}"></div>
+                </div>
+                <p class="confidence-percentage">{{ "%.1f"|format(confidence * 100) }}%</p>
+              </div>
+              <div class="report-section">
+                <a href="/download-report/{{ detection_id }}" class="download-btn">
+                  <i class="fas fa-file-download"></i> Download Detailed Report
+                </a>
+                <button type="button" id="analyze-again-btn" class="submit-btn" style="margin-top: 1rem;">
+                  <i class="fas fa-redo"></i> Analyze Another Image
+                </button>
+              </div>
+            </div>
+            {% endif %}
+
+          {% if treatment %}
+          <div id="treatment-recommendations-section" class="treatment-section">
+            <h3 class="treatment-title">Treatment Recommendations</h3>
+            
+            <div class="treatment-category">
+              <h4 class="category-title">Chemical Control</h4>
+              <ul class="treatment-list">
+                {% for item in treatment.chemical %}
+                <li class="treatment-item">
+                  <i class="fas fa-flask"></i>
+                  {{ item }}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <div class="treatment-category">
+              <h4 class="category-title">Biological Control</h4>
+              <ul class="treatment-list">
+                {% for item in treatment.biological %}
+                <li class="treatment-item">
+                  <i class="fas fa-leaf"></i>
+                  {{ item }}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <div class="treatment-category">
+              <h4 class="category-title">Preventive Measures</h4>
+              <ul class="treatment-list">
+                {% for item in treatment.preventive %}
+                <li class="treatment-item">
+                  <i class="fas fa-shield-alt"></i>
+                  {{ item }}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            {% if treatment.market_products %}
+            <div class="treatment-category">
+              <h4 class="category-title">Available Market Treatments</h4>
+              <ul class="treatment-list">
+                {% for item in treatment.market_products %}
+                <li class="treatment-item">
+                  <i class="fas fa-store"></i>
+                  {{ item }}
+                </li>
+                {% endfor %}
+              </ul>
+              <p class="text-muted-custom" style="margin-top:.5rem; font-size: .9rem;">Always verify local regulations and product labels. Use PPE and follow recommended doses and pre-harvest intervals.</p>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          {% if prediction %}
+          <div id="ai-advisor-card" class="card" style="margin-top:1rem;">
+            <h3 class="section-title"><i class="fas fa-robot"></i> AI Advisor</h3>
+            <p class="muted">Get an AI-generated, step-by-step plan tailored to this diagnosis.</p>
+            <form method="GET" action="/ai-advisor">
+              <textarea name="prefill" style="display:none;">Crop/Disease: {{ prediction }}
+Confidence: {{ "%.1f"|format(confidence * 100) }}%
+Context: Image-based detection via CropSense. Provide concise, practical steps (immediate, cultural, organic/biological, and chemical with active ingredients & PHI). Ask 3 brief follow-up questions if needed.</textarea>
+              <button type="submit" class="submit-btn"><i class="fas fa-wand-magic-sparkles"></i> Ask AI Advisor</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section-padding" style="background:#ffffff;">
+      <h2 class="section-title reveal">Our Powerful Features</h2>
+      <div class="features-grid">
+        {% for feature in features %}
+        <div class="feature-card reveal" data-delay="{{ loop.index0 * 80 }}">
+          <i class="{{ feature.icon }}"></i>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Supported Diseases Section -->
+    <section class="section-padding" style="background: #f8f9fa;">
+      <h2 class="section-title reveal">Supported Plant Diseases</h2>
+      <div class="diseases-grid">
+        {% for disease in class_names %}
+        <div class="disease-item reveal" data-delay="{{ loop.index0 * 25 }}">
+          <i class="fas fa-seedling"></i>
+          {{ disease.replace('___', ' ').replace('_', ' ').title() }}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2025 CropSense. All rights reserved.</p>
+    </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Scroll reveal
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            const delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            if (!isNaN(delay)) {
+              el.style.transitionDelay = (delay / 1000) + 's';
+            }
+            el.classList.add('show');
+            observer.unobserve(el);
+          }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // Animate confidence bar width
+      document.querySelectorAll('.confidence-fill').forEach(bar => {
+        const pct = parseFloat(bar.getAttribute('data-width') || '0');
+        bar.style.width = '0%';
+        bar.style.transition = 'width 0.8s ease';
+        setTimeout(() => {
+          bar.style.width = Math.max(0, Math.min(100, pct)) + '%';
+        }, 50);
+      });
+
+      const imageInput = document.getElementById('image');
+      const imagePreviewContainer = document.getElementById('image-preview-container');
+      const imagePreview = document.getElementById('image-preview');
+      const uploadedImagePreviewServer = document.getElementById('uploaded-image-preview-server'); // New
+      const treatmentRecommendationsSection = document.getElementById('treatment-recommendations-section'); // New
+
+      imageInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          imagePreviewContainer.style.display = 'block';
+          // Hide server-rendered preview if client-side preview is shown
+          if (uploadedImagePreviewServer) uploadedImagePreviewServer.style.display = 'none'; // New
+          reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+          }
+          reader.readAsDataURL(file);
+        } else {
+          imagePreviewContainer.style.display = 'none';
+        }
+      });
+
+      const analyzeAgainBtn = document.getElementById('analyze-again-btn');
+      if (analyzeAgainBtn) {
+        analyzeAgainBtn.addEventListener('click', function() {
+          // Clear prediction/error messages
+          const resultSectionSuccess = document.querySelector('.result-section.success-result');
+          const resultSectionError = document.querySelector('.result-section.error-result');
+          if (resultSectionSuccess) resultSectionSuccess.style.display = 'none';
+          if (resultSectionError) resultSectionError.style.display = 'none';
+
+          // Reset image preview
+          imagePreviewContainer.style.display = 'none';
+          imagePreview.src = '#';
+          imageInput.value = ''; // Clear the file input
+          if (uploadedImagePreviewServer) uploadedImagePreviewServer.style.display = 'none'; // New
+
+          // Optionally clear the image path text input
+          const imagePathInput = document.getElementById('image_path');
+          if (imagePathInput) imagePathInput.value = '';
+
+          // Hide treatment recommendations
+          if (treatmentRecommendationsSection) treatmentRecommendationsSection.style.display = 'none'; // New
+
+          // Hide AI Advisor card
+          const aiAdvisorCard = document.getElementById('ai-advisor-card');
+          if (aiAdvisorCard) aiAdvisorCard.style.display = 'none';
+        });
+      }
+    });
+  </script>
+  </body>
+</html>

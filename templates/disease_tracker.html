@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t('nav.disease_tracker') }} - {{ t('brand') }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #0f5132 0%, #052e1d 100%);
+            min-height: 100vh;
+        }
+        .modern-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding-bottom: 5px; /* Add some space for the underline */
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #667eea;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            transform: scaleX(1);
+        }
+
+        .nav-link.active {
+            color: #667eea;
+            font-weight: 500; /* remove bold */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 0;
+            padding: 2rem;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .records-table th,
+        .records-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="modern-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-text" style="color: #0f5132;">CropSense</span>
+            </div>
+            <div class="nav-links" style="align-items:center; gap:1rem;">
+                <a href="/" class="nav-link">{{ t('nav.home') }}</a>
+                <a href="/disease-tracker" class="nav-link">{{ t('nav.disease_tracker') }}</a>
+                <a href="/plants" class="nav-link">{{ t('nav.tracked_plants') }}</a>
+                <a href="/analytics" class="nav-link">{{ t('nav.analytics') }}</a>
+                <a href="/weather" class="nav-link">{{ t('nav.weather') }}</a>
+                <a href="/ai-advisor" class="nav-link">{{ t('nav.ai_advisor') }}</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2 class="card-title">{{ t('dt.track_new') }}</h2>
+            <form method="POST" enctype="multipart/form-data" action="/disease-tracker">
+                <div class="form-group">
+                    <label class="input-label" for="image">{{ t('dt.upload_images') }}</label>
+                    <input type="file" id="image" name="image" class="form-input" accept="image/*" capture="environment" multiple>
+                    <small>{{ t('dt.multi_tip') }}</small>
+                </div>
+                <div class="form-group">
+                    <label class="input-label" for="plant_id">{{ t('dt.existing_plant_id') }}</label>
+                    <input type="number" id="plant_id" name="plant_id" class="form-input" placeholder="{{ t('dt.existing_plant_id.placeholder') }}">
+                    <small>{{ t('dt.existing_plant_id.help') }}</small>
+                </div>
+                <div class="form-group">
+                    <label class="input-label" for="plant_name">{{ t('dt.plant_name') }}</label>
+                    <input type="text" id="plant_name" name="plant_name" class="form-input" placeholder="{{ t('dt.plant_name.placeholder') }}">
+                </div>
+                <div class="form-group">
+                    <label class="input-label" for="species">{{ t('dt.species') }}</label>
+                    <input type="text" id="species" name="species" class="form-input" placeholder="{{ t('dt.species.placeholder') }}">
+                </div>
+                <div class="form-group">
+                    <label class="input-label" for="location">{{ t('dt.location') }}</label>
+                    <input type="text" id="location" name="location" class="form-input" placeholder="{{ t('dt.location.placeholder') }}">
+                </div>
+                <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                    <button type="submit" class="submit-btn" style="width:auto;">{{ t('dt.track_button') }}</button>
+                    <small style="align-self:center; color:#2c3e50; opacity:0.9;">{{ t('dt.tip_multi') }}</small>
+                </div>
+            </form>
+            {% if plant_id_used %}
+            <p style="margin-top:1rem;color:#2c3e50;">
+                {{ t('dt.tracked_under') }} <strong>{{ plant_id_used }}</strong>. 
+                <a href="/plant/{{ plant_id_used }}" style="color:#667eea;">{{ t('dt.view_dashboard') }}</a>
+            </p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">{{ t('dt.progression') }}</h2>
+            <div class="chart-container">
+                <canvas id="progressionChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">{{ t('dt.history') }}</h2>
+            <form method="GET" action="/disease-tracker" style="margin-bottom:1rem; display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+                <div class="form-group" style="flex:1; min-width:200px;">
+                    <label class="input-label" for="filter_plant_id">{{ t('dt.filter.plant_id') }}</label>
+                    <input type="number" id="filter_plant_id" name="plant_id" class="form-input" value="{{ plant_id or '' }}" placeholder="{{ t('dt.filter.plant_id.placeholder') }}">
+                </div>
+                <div class="form-group" style="width:150px;">
+                    <label class="input-label" for="filter_days">{{ t('dt.filter.days') }}</label>
+                    <input type="number" id="filter_days" name="days" class="form-input" value="{{ days }}" min="1">
+                </div>
+                <button type="submit" class="submit-btn" style="width:auto;">{{ t('dt.apply') }}</button>
+            </form>
+            <table class="records-table">
+                <thead>
+                    <tr>
+                        <th>{{ t('dt.table.date') }}</th>
+                        <th>{{ t('dt.table.plant_type') }}</th>
+                        <th>{{ t('dt.table.disease') }}</th>
+                        <th>{{ t('dt.table.confidence') }}</th>
+                        <th>{{ t('dt.table.severity') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in history %}
+                    <tr>
+                        <td>{{ record.detection[4] }}</td>
+                        <td>{{ record.detection[1] }}</td>
+                        <td>{{ record.detection[2] }}</td>
+                        <td>{{ "%.2f"|format(record.detection[3]) }}</td>
+                        <td>{{ record.detection[7] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const progressionCtx = document.getElementById('progressionChart').getContext('2d');
+        new Chart(progressionCtx, {
+            type: 'line',
+            data: {
+                labels: {{ history | map(attribute='detection') | map(attribute=4) | list | tojson | safe }},
+                datasets: [{
+                    label: '{{ t('chart.disease_severity') }}',
+                    data: {{ history | map(attribute='detection') | map(attribute=3) | list | tojson | safe }},
+                    borderColor: '#ef4444',
+                    tension: 0.1
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

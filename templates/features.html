@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features - CropSense AI</title>
+    <link rel="stylesheet" href="../static/css/style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #28a745;
+            min-height: 100vh;
+        }
+        .modern-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding-bottom: 5px; /* Add some space for the underline */
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #667eea;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            transform: scaleX(1);
+        }
+
+        .nav-link.active {
+            color: #667eea;
+            font-weight: 500; /* remove bold */
+        }
+        .features-container {
+            max-width: 1200px;
+            margin: 100px auto 0;
+            padding: 2rem;
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .feature-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .feature-description {
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <nav class="modern-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-text" style="color: #0f5132;">CropSense</span>
+            </div>
+            <div class="nav-links" style="align-items:center; gap:1rem;">
+                <a href="/" class="nav-link">{{ t('nav.home') }}</a>
+                <a href="/disease-tracker" class="nav-link">{{ t('nav.disease_tracker') }}</a>
+                <a href="/plants" class="nav-link">{{ t('nav.tracked_plants') }}</a>
+                <a href="/analytics" class="nav-link">{{ t('nav.analytics') }}</a>
+                <a href="/weather" class="nav-link">{{ t('nav.weather') }}</a>
+                <a href="/ai-advisor" class="nav-link">{{ t('nav.ai_advisor') }}</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="features-container">
+        <div class="feature-card">
+            <h2 class="feature-title">AI-Powered Plant Disease Detection</h2>
+            <p class="feature-description">Our system uses a state-of-the-art deep learning model to accurately identify a wide range of plant diseases from images. Simply upload a photo of a plant leaf, and our AI will analyze it in real-time to provide a diagnosis.</p>
+        </div>
+        <div class="feature-card">
+            <h2 class="feature-title">Disease Tracking and History</h2>
+            <p class="feature-description">Keep a record of all your past disease detections. Our disease tracker allows you to view a history of your scans, including the plant type, detected disease, and confidence score. This helps in monitoring the health of your crops over time.</p>
+        </div>
+        <div class="feature-card">
+            <h2 class="feature-title">Analytics Dashboard</h2>
+            <p class="feature-description">Visualize your crop health data with our interactive analytics dashboard. See charts and statistics on disease distribution, the number of scans performed, and the types of plants being monitored. Gain valuable insights to make informed decisions.</p>
+        </div>
+        <div class="feature-card">
+            <h2 class="feature-title">Smart Treatment Recommendations</h2>
+            <p class="feature-description">For each detected disease, our system provides a set of smart treatment recommendations. These include chemical, biological, and preventive measures to help you effectively manage and treat the identified plant diseases.</p>
+        </div>
+        <div class="feature-card">
+            <h2 class="feature-title">PDF Report Generation</h2>
+            <p class="feature-description">Generate a detailed PDF report for each disease diagnosis. The report includes the uploaded image, the prediction result, confidence score, and treatment recommendations. This is useful for record-keeping and sharing with experts.</p>
+        </div>
+    </div>
+</body>
+</html>
