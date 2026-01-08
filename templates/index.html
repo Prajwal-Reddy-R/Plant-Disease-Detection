@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Disease Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-responsive.css') }}" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,6 +69,49 @@
             font-size: 0.9em;
             color: #7f8c8d;
             margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                padding: 12px 15px;
+                min-height: 44px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+                max-width: 100%;
+            }
+
+            .container {
+                padding: 10px;
+                border-radius: 4px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            input[type="text"] {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>

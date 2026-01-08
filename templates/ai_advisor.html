@@ -77,7 +77,159 @@
         color: #667eea;
         font-weight: 500; /* remove bold */
     }
-    .container{ max-width:1000px; margin:100px auto 0; padding:2rem 1rem; }
+
+    /* Hamburger Menu */
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        gap: 0.5rem;
+    }
+
+    .hamburger span {
+        width: 25px;
+        height: 3px;
+        background-color: #2c3e50;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg) translateY(10px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg) translateY(-10px);
+    }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        .hamburger {
+            display: flex;
+        }
+
+        .nav-links {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            flex-direction: column;
+            gap: 0;
+            padding: 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-links.active {
+            max-height: 400px;
+        }
+
+        .nav-link {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: block;
+        }
+
+        .nav-container {
+            padding: 0 1.5rem;
+        }
+
+        .brand-text {
+            font-size: 1.2rem;
+        }
+
+        .container {
+            margin: 80px auto 0;
+            padding: 1rem;
+        }
+
+        .card {
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        textarea {
+            min-height: 120px;
+            padding: 0.7rem;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+            min-height: 44px;
+        }
+
+        .result {
+            padding: 0.8rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-container {
+            padding: 0 1rem;
+        }
+
+        .brand-text {
+            font-size: 1rem;
+        }
+
+        .container {
+            margin: 70px auto 0;
+            padding: 0.75rem;
+        }
+
+        .card {
+            padding: 0.8rem;
+            border-radius: 10px;
+        }
+
+        .header {
+            font-size: 1.2rem;
+            margin: 0.75rem 0 1rem;
+        }
+
+        textarea {
+            min-height: 100px;
+            padding: 0.6rem;
+            font-size: 13px;
+        }
+
+        .btn {
+            padding: 0.5rem 0.6rem;
+            font-size: 0.8rem;
+            min-height: 44px;
+            width: 100%;
+        }
+
+        .actions {
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .copy {
+            width: 100%;
+            text-align: center;
+        }
+
+        .result {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .small {
+            font-size: 0.75rem;
+        }
+    }
     .header{ color:#fff; margin:1rem 0 1.25rem; }
     .card{ background:var(--card); border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.08); padding:1.25rem; }
     textarea, input, button { font-family: inherit; }
@@ -99,13 +251,18 @@
             <div class="nav-brand">
                 <span class="brand-text" style="color: #0f5132;">CropSense</span>
             </div>
-            <div class="nav-links" style="align-items:center; gap:1rem;">
+            <div class="nav-links" id="navMenu" style="align-items:center; gap:1rem;">
                 <a href="/" class="nav-link">{{ t('nav.home') }}</a>
                 <a href="/disease-tracker" class="nav-link">{{ t('nav.disease_tracker') }}</a>
                 <a href="/plants" class="nav-link">{{ t('nav.tracked_plants') }}</a>
                 <a href="/analytics" class="nav-link">{{ t('nav.analytics') }}</a>
                 <a href="/weather" class="nav-link">{{ t('nav.weather') }}</a>
                 <a href="/ai-advisor" class="nav-link">{{ t('nav.ai_advisor') }}</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
     </nav>
@@ -163,6 +320,26 @@
                     link.classList.add('active');
                 }
             });
+
+            // Hamburger Menu Toggle
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('navMenu');
+
+            if (hamburger) {
+                hamburger.addEventListener('click', function() {
+                    hamburger.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+
+                // Close menu when a link is clicked
+                const navLinks = navMenu.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        hamburger.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
+                });
+            }
         });
     </script>
 </body>
