@@ -39,9 +39,9 @@ def set_language(lang):
 
 # Initialize components with API key
 API_KEY = "AIzaSyA81mK0TSDJ1ov-MVM3H_DywEca2CsfcOo"
-train_dir = 'C:/Users/darshangouda/MERN/Main Proj/NewOne/PlantVillage/color/train'
+train_dir = './PlantVillage/color/train'
 class_names = load_class_names(train_dir)
-model_path = 'C:/Users/darshangouda/MERN/Main Proj/NewOne/hybrid_plant_disease_model (1).pth'
+model_path = './hybrid_plant_disease_model (1).pth'
 model = load_model(model_path, num_classes=len(class_names), device=device)
 
 # Initialize components
