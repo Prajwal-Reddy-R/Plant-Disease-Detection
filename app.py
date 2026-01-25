@@ -38,7 +38,7 @@ def set_language(lang):
     return redirect(request.referrer or url_for('home'))
 
 # Initialize components with API key
-API_KEY = "AIzaSyA81mK0TSDJ1ov-MVM3H_DywEca2CsfcOo"
+API_KEY = os.environ.get('GOOGLE_API_KEY', 'your-api-key-here')
 train_dir = './PlantVillage/color/train'
 class_names = load_class_names(train_dir)
 model_path = './hybrid_plant_disease_model (1).pth'
