@@ -83,12 +83,14 @@ celerybeat-schedule
 
 # Environments
 .env
+.env.*
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+*.env
 
 # Spyder project settings
 .spyderproject
@@ -109,6 +111,18 @@ dmypy.json
 .pyre/
 
 # Project specific
+# Sensitive runtime / API configuration
+*.key
+*.pem
+*.p12
+*.crt
+*.cer
+config.local.*
+settings.local.*
+.env.local
+.env.production
+.env.development
+
 # Large dataset (uncomment if you want to ignore)
 PlantVillage/
 # Trained model (uncomment if you want to ignore large model files)

@@ -38,7 +38,7 @@ def set_language(lang):
     return redirect(request.referrer or url_for('home'))
 
 # Initialize components with API key
-API_KEY = os.environ.get('GOOGLE_API_KEY', 'your-api-key-here')
+API_KEY = os.environ.get('GOOGLE_API_KEY') or os.environ.get('GEMINI_API_KEY') or ''
 train_dir = './PlantVillage/color/train'
 class_names = load_class_names(train_dir)
 model_path = './hybrid_plant_disease_model (1).pth'
@@ -829,8 +829,8 @@ def weather_page():
 
 
 # --- AI Disease Treatment Recommender (Gemini) ---
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', API_KEY)
-GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-1.5-flash-latest')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY') or API_KEY or ''
+GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.0-flash')
 # Gemini request tuning (configurable via environment)
 try:
     GEMINI_CONNECT_TIMEOUT = float(os.environ.get('GEMINI_CONNECT_TIMEOUT', '5'))
@@ -857,7 +857,11 @@ def generate_ai_treatments(description: str) -> dict:
         if not description or not description.strip():
             return {'success': False, 'error': 'Please provide a description of the plant problem.'}
         if not GEMINI_API_KEY:
-            return {'success': False, 'error': 'Gemini API key not configured.'}
+            return {
+                'success': True,
+                'text': _build_offline_ai_advice(description, 'Gemini API key not configured. Showing offline guidance.'),
+                'offline': True,
+            }
 
         system_guidance = (
             "You are an expert agronomist. Based on the user's description of a plant disease or symptom, "
@@ -936,7 +940,7 @@ def generate_ai_treatments(description: str) -> dict:
                     resp = r2
             # Step 3: v1 with known stable ids
             if not resp or resp.status_code != 200:
-                stable_ids = ['gemini-1.5-flash', 'gemini-1.5-flash-001', 'gemini-1.5-flash-8b']
+                stable_ids = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-001', 'gemini-2.0-flash-lite', 'gemini-2.0-flash-lite-001']
                 for mid in stable_ids:
                     if mid == base_model or mid == GEMINI_MODEL:
                         continue
@@ -946,7 +950,7 @@ def generate_ai_treatments(description: str) -> dict:
                         break
             # Step 4: v1beta with known stable ids (no '-latest')
             if not resp or resp.status_code != 200:
-                for mid in ['gemini-1.5-flash', 'gemini-1.5-flash-001', 'gemini-1.5-flash-8b']:
+                for mid in ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-001', 'gemini-2.0-flash-lite', 'gemini-2.0-flash-lite-001']:
                     r4 = try_call('v1beta', mid)
                     if r4 and r4.status_code == 200:
                         resp = r4
@@ -1033,7 +1037,7 @@ def api_ai_treatments():
         data = request.get_json(silent=True) or {}
         description = data.get('description') or request.form.get('description', '')
         out = generate_ai_treatments(description)
-        status = 200 if out.get('success') else 400
+        status = 200 if out.get('success') or out.get('offline') else 400
         return jsonify(out), status
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
